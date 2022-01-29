@@ -1,4 +1,16 @@
-﻿$WebClient = New-Object System.Net.WebClient
+﻿For ($i=0; $i -lt 10; $i++) {
+    if (!(Test-Connection 1.1.1.1 –Count 1 –Quiet)) {
+        Start-Sleep -s 30s
+    }
+    elif ($i=9) {
+        Exit
+    }
+    else {
+        break
+    }
+}
+
+$WebClient = New-Object System.Net.WebClient
 $json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=fr-FR")
 
 $url = $json | ConvertFrom-Json
