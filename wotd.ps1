@@ -2,7 +2,7 @@
     if (!(Test-Connection 1.1.1.1 –Count 1 –Quiet)) {
         Start-Sleep -s 30s
     }
-    elif ($i=9) {
+    elseif ($i=9) {
         Exit
     }
     else {
