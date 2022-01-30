@@ -1,4 +1,13 @@
-﻿# Check internet connection for 5 minutes by step of 30 seconds
+﻿# Arguments manager
+$inst = $args[0]
+if (($inst -eq "install") -or ($inst -eq "-install") -or ($inst -eq "i") -or ($inst -eq "-i")) {
+  $action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -ExecutionPolicy ByPass -File C:\WOTD\wotd.ps1"
+  $trigger = New-ScheduledTaskTrigger -AtLogon
+  Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
+  Exit
+}
+
+# Check internet connection for 5 minutes by step of 30 seconds
 For ($i = 0; $i -lt 10; $i++) {
   if (Test-Connection 1.1.1.1 –Count 1 –Quiet) {
     break
