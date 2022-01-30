@@ -1,6 +1,7 @@
-﻿For ($i=0; $i -lt 10; $i++) {
+﻿# Check internet connection for 5 minutes by step of 30 seconds
+For ($i=0; $i -lt 10; $i++) {
     if (!(Test-Connection 1.1.1.1 –Count 1 –Quiet)) {
-        Start-Sleep -s 30s
+        Start-Sleep -s 30
     }
     elseif ($i=9) {
         Exit
@@ -10,12 +11,13 @@
     }
 }
 
+# Downloading image
 $WebClient = New-Object System.Net.WebClient
 $json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=fr-FR")
+$JsonObject = $json | ConvertFrom-Json
+$WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url,"C:\WOTD\wotd.jpg")
 
-$url = $json | ConvertFrom-Json
-$WebClient.DownloadFile("https://bing.com" + $url.images.url,"C:\WOTD\wotd.jpg")
-
+# Wallpaper setting class
 $setwallpapersrc = @"
 using System.Runtime.InteropServices;
 
@@ -34,4 +36,5 @@ public class Wallpaper
 "@
 Add-Type -TypeDefinition $setwallpapersrc
 
+# Set the wallpaper
 [Wallpaper]::SetWallpaper("C:\WOTD\wotd.jpg")
