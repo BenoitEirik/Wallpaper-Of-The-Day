@@ -1,6 +1,6 @@
 ﻿# Arguments manager
 $inst = $args[0]
-if (($inst -eq "install") -or ($inst -eq "-install") -or ($inst -eq "i") -or ($inst -eq "-i")) {
+if ($inst -eq "install") {
   $action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -ExecutionPolicy ByPass -File C:\WOTD\wotd.ps1"
   $trigger = New-ScheduledTaskTrigger -AtLogon
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
