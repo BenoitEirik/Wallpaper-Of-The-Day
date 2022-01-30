@@ -1,21 +1,21 @@
 ﻿# Check internet connection for 5 minutes by step of 30 seconds
-For ($i=0; $i -lt 10; $i++) {
-    if (!(Test-Connection 1.1.1.1 –Count 1 –Quiet)) {
-        Start-Sleep -s 30
-    }
-    elseif ($i=9) {
-        Exit
-    }
-    else {
-        break
-    }
+For ($i = 0; $i -lt 10; $i++) {
+  if (Test-Connection 1.1.1.1 –Count 1 –Quiet) {
+    break
+  }
+  elseif ($i -eq 9) {
+    Exit
+  }
+  else {
+    Start-Sleep -s 30
+  }
 }
 
 # Downloading image
 $WebClient = New-Object System.Net.WebClient
 $json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=fr-FR")
 $JsonObject = $json | ConvertFrom-Json
-$WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url,"C:\WOTD\wotd.jpg")
+$WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url, "C:\WOTD\wotd.jpg")
 
 # Wallpaper setting class
 $setwallpapersrc = @"
