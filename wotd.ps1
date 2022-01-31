@@ -1,10 +1,19 @@
 ﻿# Arguments manager
 $inst = $args[0]
+$localeCode = $args[1]
 if ($inst -eq "install") {
-  $action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -ExecutionPolicy ByPass -File C:\WOTD\wotd.ps1"
+  # Set default language code
+  if ($localeCode -eq "") {
+    $localeCode = "fr-FR"
+  }
+
+  $action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -ExecutionPolicy ByPass -File C:\WOTD\wotd.ps1 $($localeCode)"
   $trigger = New-ScheduledTaskTrigger -AtLogon
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
   Exit
+}
+else {
+  $localeCode = $args[0]
 }
 
 # Check internet connection for 5 minutes by step of 30 seconds
@@ -22,7 +31,7 @@ For ($i = 0; $i -lt 10; $i++) {
 
 # Downloading image
 $WebClient = New-Object System.Net.WebClient
-$json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=fr-FR")
+$json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=$($localeCode)")
 $JsonObject = $json | ConvertFrom-Json
 $WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url, "C:\WOTD\wotd.jpg")
 
