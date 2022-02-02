@@ -7,7 +7,7 @@ if ($inst -eq "install") {
     $localeCode = "fr-FR"
   }
 
-  $action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -ExecutionPolicy ByPass -File C:\WOTD\wotd.ps1 $($localeCode)"
+  $action = New-ScheduledTaskAction -Execute "cscript" -Argument "//nologo C:\WOTD\startup.vbs $($localeCode)"
   $trigger = New-ScheduledTaskTrigger -AtLogon
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
   Exit
