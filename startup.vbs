@@ -13,7 +13,7 @@ localeCode = Wscript.Arguments(0)
 If objFSO.FileExists(strPath) Then
    'Return short path name
    set objFile=objFSO.GetFile(strPath)
-   strCMD="powershell -nologo -command " & Chr(34) & "&{" &_
+   strCMD="powershell -ExecutionPolicy bypass -nologo -command " & Chr(34) & "&{" &_
     objFile.ShortPath & " " & localeCode & "}" & Chr(34)
 
   'Use 0 to hide window

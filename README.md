@@ -4,11 +4,10 @@ The wallpapers are from Microsoft's [Bing](https://www.bing.com/) search engine.
 
 ## Installation
 1. Download the script.
-2. Move the script in `C:\WOTD`.
-3. Open a terminal with administrator rights:
-`PS C:\WOTD> .\wotd.ps1 install fr-FR`
+2. Open a terminal with administrator rights:
+`PS C:\WOTD>  powershell -ExecutionPolicy bypass -File C:\WOTD\wotd.ps1 install fr-FR`
 > NB: You can choose the language by replacing `fr-FR` with the code corresponding to your country. See below for more.
-4. Reboot your computer and the wallpaper gets automatically applied!
+3. Reboot your computer and the wallpaper gets automatically applied!
 
 > NB: the script will search for the internet connection every 30 seconds for 5 minutes if it does not find it the first time. Beyond that it will stop.
 
