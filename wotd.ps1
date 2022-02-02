@@ -1,19 +1,43 @@
 ﻿# Arguments manager
-$inst = $args[0]
-$localeCode = $args[1]
-if ($inst -eq "install") {
+param ($Setup, $Locale, $Dest)
+
+
+
+############ Installation ############
+
+if ($Setup -eq "install" ) {
   # Set default language code
-  if ($localeCode -eq "") {
-    $localeCode = "fr-FR"
+  if (!$Locale) {
+    $Locale = "fr-FR"
   }
 
-  $action = New-ScheduledTaskAction -Execute "wscript" -Argument "//nologo C:\WOTD\startup.vbs $($localeCode)"
+  # Set default location
+  if (!$Dest)
+  {
+    $DriveLetter = (Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name -First 1)
+    $Dest = $DriveLetter + ":\WOTD"
+    mkdir "$($DriveLetter)\Program Files\WOTD"
+  }
+  
+  # Copy file to location
+  Copy-Item "$($PSScriptRoot)\wotd.ps1" -Destination "$($Dest)"
+  Copy-Item "$($PSScriptRoot)\startup.vbs" -Destination "$($Dest)"
+  Copy-Item "$($PSScriptRoot)\README.md" -Destination "$($Dest)"
+
+  # Set new task scheduler
+  $action = New-ScheduledTaskAction -Execute "wscript" -Argument "//nologo `"$($Dest)\startup.vbs`" $($Locale)"
   $trigger = New-ScheduledTaskTrigger -AtLogon
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
   Exit
 }
-else {
-  $localeCode = $args[0]
+
+
+
+############ Set wallpaper ############
+
+# Set default language code
+if (!$Locale) {
+  $Locale = "fr-FR"
 }
 
 # Check internet connection for 5 minutes by step of 30 seconds
@@ -31,7 +55,7 @@ For ($i = 0; $i -lt 10; $i++) {
 
 # Downloading image
 $WebClient = New-Object System.Net.WebClient
-$json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=$($localeCode)")
+$json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=$($Locale)")
 $JsonObject = $json | ConvertFrom-Json
 $WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url, "C:\WOTD\wotd.jpg")
 

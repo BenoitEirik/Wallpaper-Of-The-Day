@@ -3,11 +3,14 @@ This script automates changing the desktop wallpaper each day when the computer 
 The wallpapers are from Microsoft's [Bing](https://www.bing.com/) search engine.
 
 ## Installation
-1. Download the script.
-2. Open a terminal with administrator rights:
-`PS C:\WOTD>  powershell -ExecutionPolicy bypass -File C:\WOTD\wotd.ps1 install fr-FR`
-> NB: You can choose the language by replacing `fr-FR` with the code corresponding to your country. See below for more.
-3. Reboot your computer and the wallpaper gets automatically applied!
+1. Download, extract the contents and navigate to the extracted folder.
+2. Open a terminal with administrator rights in the extracted foler and run:  
+`>  powershell -ExecutionPolicy bypass -File ".\wotd.ps1" -Setup install`  
+Other parameters:  
+`   -Dest "C:\Program Files\WOTD"` To set the installation folder  
+`   -Locale fr-FR` To set the language. See *Language selection* for more  
+3. Delete the extracted foler.
+4. Reboot your computer and the wallpaper gets automatically applied!
 
 > NB: the script will search for the internet connection every 30 seconds for 5 minutes if it does not find it the first time. Beyond that it will stop.
 
