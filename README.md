@@ -1,5 +1,5 @@
 # Wallpaper Of The Day
-This script automates changing the desktop wallpaper each day when the computer starts.
+This script automates changing the desktop wallpaper each day at login.
 The wallpapers are from Microsoft's [Bing](https://www.bing.com/) search engine.
 
 ## Installation
