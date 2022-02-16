@@ -79,4 +79,5 @@ public class Wallpaper
 Add-Type -TypeDefinition $setwallpapersrc
 
 # Set the wallpaper
+Start-Sleep -s 5 # To prevent black screen after downloading image
 [Wallpaper]::SetWallpaper("C:\WOTD\wotd.jpg")
