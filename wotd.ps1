@@ -54,10 +54,16 @@ For ($i = 0; $i -lt 10; $i++) {
 }
 
 # Downloading image
-$WebClient = New-Object System.Net.WebClient
-$json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=$($Locale)")
-$JsonObject = $json | ConvertFrom-Json
-$WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url, "C:\WOTD\wotd.jpg")
+try {
+  $WebClient = New-Object System.Net.WebClient
+  $json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=$($Locale)")
+  $JsonObject = $json | ConvertFrom-Json
+  $WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url, "C:\WOTD\wotd.jpg")
+} 
+catch [System.Net.WebException],[System.IO.IOException],[System.Net.ArgumentNullException] {
+  Exit
+}
+
 
 # Wallpaper setting class
 $setwallpapersrc = @"
@@ -78,6 +84,16 @@ public class Wallpaper
 "@
 Add-Type -TypeDefinition $setwallpapersrc
 
-# Set the wallpaper
+# Set desktop wallpaper
 Start-Sleep -s 5 # To prevent black screen after downloading image
 [Wallpaper]::SetWallpaper("C:\WOTD\wotd.jpg")
+
+# Set lockscreen wallpaper
+$RegKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP"
+if(!(Test-Path $RegKeyPath)) {
+    Write-Host "Creating registry path $($RegKeyPath)."
+    New-Item -Path $RegKeyPath -Force | Out-Null
+}
+New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageStatus" -Value "1" -PropertyType DWORD -Force | Out-Null
+New-ItemProperty -Path $RegKeyPath -Name "LockScreenImagePath" -Value "C:\WOTD\wotd.jpg" -PropertyType STRING -Force | Out-Null
+New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageUrl" -Value "C:\WOTD\wotd.jpg" -PropertyType STRING -Force | Out-Null
