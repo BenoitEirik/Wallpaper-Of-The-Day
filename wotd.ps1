@@ -25,20 +25,21 @@ if ($Setup -eq "install" ) {
   Copy-Item "$($PSScriptRoot)\README.md" -Destination "$($Dest)"
 
   # Set new task scheduler
-  $action = New-ScheduledTaskAction -Execute "wscript" -Argument "//nologo `"$($Dest)\startup.vbs`" $($Locale)"
+  $action = New-ScheduledTaskAction -Execute "wscript" -Argument "//nologo `"$($Dest)\startup.vbs`" $($Locale) `"`"`"$($Dest)`"`"`""
   $trigger = New-ScheduledTaskTrigger -AtLogon
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
   Exit
 }
 
+if ($Setup -eq "uninstall" ) {
+  Register-EngineEvent PowerShell.Exiting –Action {
+    Start-Sleep 1; Remove-Item "C:\WOTD" -Force
+  }
+  Exit
+}
 
 
 ############ Set wallpaper ############
-
-# Set default language code
-if (!$Locale) {
-  $Locale = "fr-FR"
-}
 
 # Check internet connection for 5 minutes by step of 30 seconds
 For ($i = 0; $i -lt 10; $i++) {
@@ -58,7 +59,7 @@ try {
   $WebClient = New-Object System.Net.WebClient
   $json = $WebClient.DownloadString("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=$($Locale)")
   $JsonObject = $json | ConvertFrom-Json
-  $WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url, "C:\WOTD\wotd.jpg")
+  $WebClient.DownloadFile("https://bing.com" + $JsonObject.images.url, $Dest + "\wotd.jpg")
 } 
 catch [System.Net.WebException],[System.IO.IOException],[System.Net.ArgumentNullException] {
   Exit
@@ -86,14 +87,13 @@ Add-Type -TypeDefinition $setwallpapersrc
 
 # Set desktop wallpaper
 Start-Sleep -s 5 # To prevent black screen after downloading image
-[Wallpaper]::SetWallpaper("C:\WOTD\wotd.jpg")
+[Wallpaper]::SetWallpaper("$($Dest)\wotd.jpg")
 
 # Set lockscreen wallpaper
 $RegKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP"
 if(!(Test-Path $RegKeyPath)) {
-    Write-Host "Creating registry path $($RegKeyPath)."
-    New-Item -Path $RegKeyPath -Force | Out-Null
+  New-Item -Path $RegKeyPath -Force
 }
-New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageStatus" -Value "1" -PropertyType DWORD -Force | Out-Null
-New-ItemProperty -Path $RegKeyPath -Name "LockScreenImagePath" -Value "C:\WOTD\wotd.jpg" -PropertyType STRING -Force | Out-Null
-New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageUrl" -Value "C:\WOTD\wotd.jpg" -PropertyType STRING -Force | Out-Null
+New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageStatus" -Value "1" -PropertyType DWORD -Force
+New-ItemProperty -Path $RegKeyPath -Name "LockScreenImagePath" -Value "$($Dest)\wotd.jpg" -PropertyType STRING -Force
+New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageUrl" -Value "$($Dest)\wotd.jpg" -PropertyType STRING -Force
