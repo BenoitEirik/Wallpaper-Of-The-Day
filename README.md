@@ -14,6 +14,11 @@ Other parameters:
 
 > NB: the script will search for the internet connection every 30 seconds for 5 minutes if it does not find it the first time. Beyond that it will stop.
 
+## Uninstallation
+1. Open a terminal with administrator rights and run with the right path file:  
+`>  powershell -ExecutionPolicy bypass -File "C:\Program Files\WOTD\wotd.ps1" -Setup install` 
+> NB: make sure not being in the folder where is wotd.ps1 
+
 ## Language selection
 The wallpaper may be different depending on your country. You can choose the code corresponding to your language.
 | Language | Code |

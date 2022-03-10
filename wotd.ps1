@@ -1,9 +1,16 @@
 ﻿# Arguments manager
 param ($Setup, $Locale, $Dest)
 
-
+$RegKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP"
 
 ############ Installation ############
+
+if ($Setup -eq "install" -Or $Setup -eq "uninstall") {
+  if ([bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544") -eq $false) {
+    Write-Host "[Warning] Need administrator rights!"
+    Exit
+  }
+}
 
 if ($Setup -eq "install" ) {
   # Set default language code
@@ -15,8 +22,8 @@ if ($Setup -eq "install" ) {
   if (!$Dest)
   {
     $DriveLetter = (Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name -First 1)
-    $Dest = $DriveLetter + ":\WOTD"
-    mkdir "$($DriveLetter)\Program Files\WOTD"
+    $Dest = $DriveLetter + ":\Program Files\WOTD"
+    mkdir "$($DriveLetter):\Program Files\WOTD"
   }
   
   # Copy file to location
@@ -28,10 +35,15 @@ if ($Setup -eq "install" ) {
   $action = New-ScheduledTaskAction -Execute "wscript" -Argument "//nologo `"$($Dest)\startup.vbs`" $($Locale) `"`"`"$($Dest)`"`"`""
   $trigger = New-ScheduledTaskTrigger -AtLogon
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
-  Exit
+
+  # Set registry keys for lockscreen wallpaper
+  if(!(Test-Path $RegKeyPath)) {
+    New-Item -Path $RegKeyPath -Force
+  }
 }
 
 if ($Setup -eq "uninstall" ) {
+  Remove-Item -Path $RegKeyPath
   Remove-Item $PSScriptRoot -Force -Recurse
   Exit
 }
@@ -84,14 +96,10 @@ public class Wallpaper
 Add-Type -TypeDefinition $setwallpapersrc
 
 # Set desktop wallpaper
-Start-Sleep -s 5 # To prevent black screen after downloading image
+Start-Sleep -s 3 # To prevent black screen after downloading image
 [Wallpaper]::SetWallpaper("$($Dest)\wotd.jpg")
 
 # Set lockscreen wallpaper
-$RegKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP"
-if(!(Test-Path $RegKeyPath)) {
-  New-Item -Path $RegKeyPath -Force
-}
 New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageStatus" -Value "1" -PropertyType DWORD -Force
 New-ItemProperty -Path $RegKeyPath -Name "LockScreenImagePath" -Value "$($Dest)\wotd.jpg" -PropertyType STRING -Force
 New-ItemProperty -Path $RegKeyPath -Name "LockScreenImageUrl" -Value "$($Dest)\wotd.jpg" -PropertyType STRING -Force
