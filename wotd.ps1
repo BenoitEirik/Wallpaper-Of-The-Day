@@ -32,9 +32,7 @@ if ($Setup -eq "install" ) {
 }
 
 if ($Setup -eq "uninstall" ) {
-  Register-EngineEvent PowerShell.Exiting –Action {
-    Start-Sleep 1; Remove-Item "C:\WOTD" -Recurse
-  }
+  Remove-Item $PSScriptRoot -Force -Recurse
   Exit
 }
 
