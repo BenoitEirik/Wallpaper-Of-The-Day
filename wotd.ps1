@@ -34,7 +34,8 @@ if ($Setup -eq "install" ) {
   # Set new task scheduler
   $action = New-ScheduledTaskAction -Execute "wscript" -Argument "//nologo `"$($Dest)\startup.vbs`" $($Locale) `"`"`"$($Dest)`"`"`""
   $trigger = New-ScheduledTaskTrigger -AtLogon
-  Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper"
+  $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
+  Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WallpaperOfTheDay" -Description "Daily change wallpaper" -Settings $settings
 
   # Set registry keys for lockscreen wallpaper
   if(!(Test-Path $RegKeyPath)) {
@@ -43,6 +44,11 @@ if ($Setup -eq "install" ) {
 }
 
 if ($Setup -eq "uninstall" ) {
+  if ((Get-Location | Select-Object -ExpandProperty Path) -eq $PSScriptRoot) {
+    Write-Host "[Warning] Make sure you are not in the folder where wotd.ps1 is"
+    Exit
+  }
+
   Remove-Item -Path $RegKeyPath
   Remove-Item $PSScriptRoot -Force -Recurse
   Exit
