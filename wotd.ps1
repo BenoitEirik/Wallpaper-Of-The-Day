@@ -19,12 +19,18 @@ if ($Setup -eq "install" ) {
   }
 
   # Set default location
-  if (!$Dest)
-  {
+  if (!$Dest) {
     $DriveLetter = (Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Name -First 1)
-    $Dest = $DriveLetter + ":\Program Files\WOTD"
-    mkdir "$($DriveLetter):\Program Files\WOTD"
+    $Dest = $DriveLetter + ":\WOTD"
+    mkdir "$($DriveLetter):\WOTD"
   }
+
+  # Check if path is whithout space
+  if (($Dest | Select-String -pattern " ").length -gt 0) {
+    Write-Host "[Warning] Make sure destination path is without spaces"
+    Exit
+  }
+
   
   # Copy file to location
   Copy-Item "$($PSScriptRoot)\wotd.ps1" -Destination "$($Dest)"
@@ -44,13 +50,10 @@ if ($Setup -eq "install" ) {
 }
 
 if ($Setup -eq "uninstall" ) {
-  if ((Get-Location | Select-Object -ExpandProperty Path) -eq $PSScriptRoot) {
-    Write-Host "[Warning] Make sure you are not in the folder where wotd.ps1 is"
-    Exit
-  }
-
+  Set-Location -Path "..\"
   Remove-Item -Path $RegKeyPath
   Remove-Item $PSScriptRoot -Force -Recurse
+  Unregister-ScheduledTask -TaskName "WallpaperOfTheDay" -Confirm:$false
   Exit
 }
 

@@ -7,7 +7,7 @@ The wallpapers are from Microsoft's [Bing](https://www.bing.com/) search engine.
 2. Open a terminal with administrator rights in the extracted foler and run:  
 `>  powershell -ExecutionPolicy bypass -File ".\wotd.ps1" -Setup install`  
 Other parameters:  
-`   -Dest "C:\Program Files\WOTD"` To set the installation folder  
+`   -Dest "C:\Program Files\WOTD"` To set the installation folder. Make sure destination path without spaces  
 `   -Locale fr-FR` To set the language. See *Language selection* for more  
 3. Delete the extracted foler.
 4. Reboot your computer and the wallpaper gets automatically applied!
