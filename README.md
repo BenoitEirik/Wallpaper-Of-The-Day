@@ -2,7 +2,7 @@
 This script automates changing the desktop wallpaper & the lockscreen wallpaper each day at login.
 The wallpapers are from Microsoft's [Bing](https://www.bing.com/) search engine.
 
-~The script is now unnecessary on Windows 11 as the functionality is natively included.~
+> The script is now unnecessary on Windows 11 as the functionality is natively included.
 
 ## Installation
 1. Download, extract the contents and navigate to the extracted folder.
